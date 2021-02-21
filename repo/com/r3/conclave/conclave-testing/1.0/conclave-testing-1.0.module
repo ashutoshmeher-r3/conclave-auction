@@ -1,0 +1,142 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.r3.conclave",
+    "module": "conclave-testing",
+    "version": "1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "6.6.1",
+      "buildId": "jfwsbwrkhnc75pbni7hruvly54"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.localToProject": "public",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "com.r3.conclave",
+          "module": "conclave-enclave",
+          "version": {
+            "requires": "1.0"
+          },
+          "excludes": [
+            {
+              "group": "commons-logging",
+              "module": "commons-logging"
+            }
+          ]
+        },
+        {
+          "group": "com.r3.conclave",
+          "module": "conclave-host",
+          "version": {
+            "requires": "1.0"
+          },
+          "excludes": [
+            {
+              "group": "commons-logging",
+              "module": "commons-logging"
+            }
+          ]
+        }
+      ],
+      "files": [
+        {
+          "name": "conclave-testing-1.0.jar",
+          "url": "conclave-testing-1.0.jar",
+          "size": 32367,
+          "sha512": "0e01dd42558631c93edd5e2aec5afe5c41a0b54d4ef5050209a43718f3e8b80b2891f4510a8188002f6ae22089a38d6aeced3941da0ac2e4539aaa1037a683c4",
+          "sha256": "09d2875aaf7ed9d72078a0ba394d5b5dd9dc9aeac1b98ed5b26baa9ca706246d",
+          "sha1": "60e31f625287bb98b0efddbb598c6ca04d3e0ccd",
+          "md5": "6d0a643a7faade1c9eb3038f8f4ded50"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.localToProject": "public",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "com.r3.conclave",
+          "module": "conclave-enclave",
+          "version": {
+            "requires": "1.0"
+          },
+          "excludes": [
+            {
+              "group": "commons-logging",
+              "module": "commons-logging"
+            }
+          ]
+        },
+        {
+          "group": "com.r3.conclave",
+          "module": "conclave-host",
+          "version": {
+            "requires": "1.0"
+          },
+          "excludes": [
+            {
+              "group": "commons-logging",
+              "module": "commons-logging"
+            }
+          ]
+        }
+      ],
+      "files": [
+        {
+          "name": "conclave-testing-1.0.jar",
+          "url": "conclave-testing-1.0.jar",
+          "size": 32367,
+          "sha512": "0e01dd42558631c93edd5e2aec5afe5c41a0b54d4ef5050209a43718f3e8b80b2891f4510a8188002f6ae22089a38d6aeced3941da0ac2e4539aaa1037a683c4",
+          "sha256": "09d2875aaf7ed9d72078a0ba394d5b5dd9dc9aeac1b98ed5b26baa9ca706246d",
+          "sha1": "60e31f625287bb98b0efddbb598c6ca04d3e0ccd",
+          "md5": "6d0a643a7faade1c9eb3038f8f4ded50"
+        }
+      ]
+    },
+    {
+      "name": "shadowRuntimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "embedded",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "conclave-testing-1.0.jar",
+          "url": "conclave-testing-1.0.jar",
+          "size": 32367,
+          "sha512": "0e01dd42558631c93edd5e2aec5afe5c41a0b54d4ef5050209a43718f3e8b80b2891f4510a8188002f6ae22089a38d6aeced3941da0ac2e4539aaa1037a683c4",
+          "sha256": "09d2875aaf7ed9d72078a0ba394d5b5dd9dc9aeac1b98ed5b26baa9ca706246d",
+          "sha1": "60e31f625287bb98b0efddbb598c6ca04d3e0ccd",
+          "md5": "6d0a643a7faade1c9eb3038f8f4ded50"
+        }
+      ]
+    }
+  ]
+}

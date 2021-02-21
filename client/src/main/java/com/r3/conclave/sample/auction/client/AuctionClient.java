@@ -3,9 +3,9 @@ package com.r3.conclave.sample.auction.client;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
 import com.r3.conclave.common.EnclaveInstanceInfo;
-import com.r3.conclave.mail.Curve25519KeyPairGenerator;
+import com.r3.conclave.mail.Curve25519PrivateKey;
 import com.r3.conclave.mail.EnclaveMail;
-import com.r3.conclave.mail.MutableMail;
+import com.r3.conclave.mail.PostOffice;
 import com.r3.conclave.sample.auction.common.Message;
 import com.r3.conclave.sample.auction.common.MessageSerializer;
 import com.r3.conclave.shaded.kotlin.Pair;
@@ -14,8 +14,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.security.KeyPair;
-import java.util.EnumSet;
+import java.security.PrivateKey;
 import java.util.UUID;
 
 public class AuctionClient {
@@ -29,8 +28,9 @@ public class AuctionClient {
         EnclaveInstanceInfo attestation = getAttestation(fromHost);
         int bid = getUserBidInput(args);
         Output serializedOutput = serializeMessage(messageType, bid);
-        KeyPair myKey = new Curve25519KeyPairGenerator().generateKeyPair();
-        byte [] encryptedMail = createEncryptedMail(myKey, attestation, serializedOutput);
+        PrivateKey myKey = Curve25519PrivateKey.random();
+        PostOffice postOffice = attestation.createPostOffice(myKey, UUID.randomUUID().toString());
+        byte[] encryptedMail = postOffice.encryptMail(serializedOutput.getBuffer());
 
         System.out.println("Sending the encrypted mail to the host.");
         toHost.writeInt(encryptedMail.length);
@@ -40,19 +40,11 @@ public class AuctionClient {
         byte[] encryptedReply = new byte[fromHost.readInt()];
         System.out.println("Reading reply mail of length " + encryptedReply.length + " bytes.");
         fromHost.readFully(encryptedReply);
-        EnclaveMail reply = attestation.decryptMail(encryptedReply, myKey.getPrivate());
+        EnclaveMail reply = postOffice.decryptMail(encryptedReply);
         System.out.println("Enclave gave us the answer '" + new String(reply.getBodyAsBytes()) + "'");
 
         toHost.close();
         fromHost.close();
-    }
-
-    private static byte[] createEncryptedMail(KeyPair myKey, EnclaveInstanceInfo attestation, Output serializedOutput){
-        MutableMail mail = attestation.createMail(serializedOutput.getBuffer());
-        mail.setPrivateKey(myKey.getPrivate());
-        mail.setTopic(UUID.randomUUID().toString());
-        byte[] encryptedMail = mail.encrypt();
-        return encryptedMail;
     }
 
     private static Output serializeMessage(String messageType, int bid){

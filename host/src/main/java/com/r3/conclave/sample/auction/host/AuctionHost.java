@@ -4,6 +4,7 @@ import com.r3.conclave.common.EnclaveInstanceInfo;
 import com.r3.conclave.host.AttestationParameters;
 import com.r3.conclave.host.EnclaveHost;
 import com.r3.conclave.host.EnclaveLoadException;
+import com.r3.conclave.host.MailCommand;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -13,6 +14,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class AuctionHost {
 
@@ -92,15 +94,26 @@ public class AuctionHost {
     private void initializeEnclave() throws EnclaveLoadException{
         enclaveHost = EnclaveHost.load(ENCLAVE_CLASS_NAME);
 
+//        enclaveHost.start(
+//            new AttestationParameters.DCAP(),
+//            new EnclaveHost.MailCallbacks() {
+//                @Override
+//                public void postMail(byte[] encryptedBytes, String routingHint) {
+//                    sendMessageToClient(routingHint, encryptedBytes);
+//                }
+//
+//            });
         enclaveHost.start(
-            new AttestationParameters.DCAP(),
-            new EnclaveHost.MailCallbacks() {
-                @Override
-                public void postMail(byte[] encryptedBytes, String routingHint) {
-                    sendMessageToClient(routingHint, encryptedBytes);
+            new AttestationParameters.DCAP(), mailCommands -> {
+                    for (MailCommand command : mailCommands) {
+                        if (command instanceof MailCommand.PostMail) {
+                            String routingHint = ((MailCommand.PostMail) command).getRoutingHint();
+                            byte[] content = ((MailCommand.PostMail) command).getEncryptedBytes();
+                            sendMessageToClient(routingHint, content);
+                        }
+                    }
                 }
-
-            });
+        );
     }
 
 }

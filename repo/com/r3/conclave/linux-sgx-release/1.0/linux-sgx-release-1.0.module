@@ -1,0 +1,61 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.r3.conclave",
+    "module": "linux-sgx-release",
+    "version": "1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "6.6.1",
+      "buildId": "jfwsbwrkhnc75pbni7hruvly54"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "linux-sgx-release-1.0.jar",
+          "url": "linux-sgx-release-1.0.jar",
+          "size": 5218425,
+          "sha512": "689e5e2757b026d7c47464084d5a0b6758cd97ad6563ab3d44a578c1f0acef10b7d1367f07895397cbf17ac60cae8aadf00c47750668ea758e6d747dda439678",
+          "sha256": "293da64577efe5d2543c4431e35d1b578c59258fea53c3199b222a3af8331bc7",
+          "sha1": "91ad10f3815702d9d31dc3be56a80983b03d3713",
+          "md5": "0b1d935e98f193f9827113300e97db9c"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "linux-sgx-release-1.0.jar",
+          "url": "linux-sgx-release-1.0.jar",
+          "size": 5218425,
+          "sha512": "689e5e2757b026d7c47464084d5a0b6758cd97ad6563ab3d44a578c1f0acef10b7d1367f07895397cbf17ac60cae8aadf00c47750668ea758e6d747dda439678",
+          "sha256": "293da64577efe5d2543c4431e35d1b578c59258fea53c3199b222a3af8331bc7",
+          "sha1": "91ad10f3815702d9d31dc3be56a80983b03d3713",
+          "md5": "0b1d935e98f193f9827113300e97db9c"
+        }
+      ]
+    }
+  ]
+}

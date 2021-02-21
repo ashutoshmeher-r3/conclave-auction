@@ -3,8 +3,9 @@ package com.r3.conclave.sample.auction.enclave;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.r3.conclave.enclave.Enclave;
+import com.r3.conclave.enclave.EnclavePostOffice;
 import com.r3.conclave.mail.EnclaveMail;
-import com.r3.conclave.mail.MutableMail;
+import com.r3.conclave.mail.PostOffice;
 import com.r3.conclave.sample.auction.common.Message;
 import com.r3.conclave.sample.auction.common.MessageSerializer;
 import com.r3.conclave.shaded.kotlin.Pair;
@@ -22,7 +23,7 @@ public class AuctionEnclave extends Enclave {
 
     // Mails send from clients to the enclave are received here
     @Override
-    protected void receiveMail(long id, String userRoute, EnclaveMail mail) {
+    protected void receiveMail(long id, EnclaveMail mail, String userRoute) {
         Message message = readMail(mail);
         PublicKey senderPK = mail.getAuthenticatedSender();
         if (message.getType().equals("BID")) {
@@ -66,8 +67,9 @@ public class AuctionEnclave extends Enclave {
     }
 
     private void sendMail(PublicKey key, String routingHint, String message) {
-        MutableMail mail = createMail(key, message.getBytes());
-        postMail(mail, routingHint);
+        EnclavePostOffice postOffice = this.postOffice(key);
+        byte[] result = postOffice.encryptMail(message.getBytes());
+        postMail(result, routingHint);
     }
 
 
