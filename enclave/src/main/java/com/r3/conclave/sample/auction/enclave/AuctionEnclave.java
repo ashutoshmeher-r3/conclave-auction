@@ -5,7 +5,6 @@ import com.esotericsoftware.kryo.io.Input;
 import com.r3.conclave.enclave.Enclave;
 import com.r3.conclave.enclave.EnclavePostOffice;
 import com.r3.conclave.mail.EnclaveMail;
-import com.r3.conclave.mail.PostOffice;
 import com.r3.conclave.sample.auction.common.Message;
 import com.r3.conclave.sample.auction.common.MessageSerializer;
 import com.r3.conclave.shaded.kotlin.Pair;

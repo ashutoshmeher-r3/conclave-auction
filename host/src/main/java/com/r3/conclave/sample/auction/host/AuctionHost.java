@@ -93,16 +93,6 @@ public class AuctionHost {
 
     private void initializeEnclave() throws EnclaveLoadException{
         enclaveHost = EnclaveHost.load(ENCLAVE_CLASS_NAME);
-
-//        enclaveHost.start(
-//            new AttestationParameters.DCAP(),
-//            new EnclaveHost.MailCallbacks() {
-//                @Override
-//                public void postMail(byte[] encryptedBytes, String routingHint) {
-//                    sendMessageToClient(routingHint, encryptedBytes);
-//                }
-//
-//            });
         enclaveHost.start(
             new AttestationParameters.DCAP(), mailCommands -> {
                     for (MailCommand command : mailCommands) {
