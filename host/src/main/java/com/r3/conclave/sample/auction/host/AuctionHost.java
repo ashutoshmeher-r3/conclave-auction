@@ -23,16 +23,15 @@ public class AuctionHost {
     private EnclaveHost enclaveHost;
     private Map<String, Socket> clientMap = new HashMap<>();
 
-    public static void main(String[] args) throws EnclaveLoadException {
+    public static void main(String[] args) throws EnclaveLoadException, IOException {
         AuctionHost host = new AuctionHost();
         host.verifyPlatformSupport();
         host.initializeEnclave();
         host.startServer();
     }
 
-    private void startServer(){
+    private void startServer() throws IOException{
         ServerSocket serverSocket = null;
-        Socket clientSocket = null;
         try {
             serverSocket = new ServerSocket(5051);
         }catch (IOException ioe){
@@ -40,19 +39,22 @@ public class AuctionHost {
         }
         System.out.println("Listening on port 5051");
         while (true) {
+            Socket clientSocket = null;
             try {
                 assert serverSocket != null;
                 clientSocket = serverSocket.accept();
+
+                String routingHint = UUID.randomUUID().toString();
+                clientMap.put(routingHint, clientSocket);
+
+                final EnclaveInstanceInfo attestation = enclaveHost.getEnclaveInstanceInfo();
+                final byte[] attestationBytes = attestation.serialize();
+                sendMessageToClient(routingHint, attestationBytes);
+                recieveMailFromClientAndDeliverToEnclave(clientSocket, routingHint);
             } catch (IOException e) {
                 System.out.println("I/O error: " + e);
+                throw e;
             }
-            String routingHint = UUID.randomUUID().toString();
-            clientMap.put(routingHint, clientSocket);
-
-            final EnclaveInstanceInfo attestation = enclaveHost.getEnclaveInstanceInfo();
-            final byte[] attestationBytes = attestation.serialize();
-            sendMessageToClient(routingHint, attestationBytes);
-            recieveMailFromClientAndDeliverToEnclave(clientSocket, routingHint);
         }
     }
 
@@ -65,7 +67,6 @@ public class AuctionHost {
             outputStream.flush();
         }catch (IOException ioe){
             ioe.printStackTrace();
-            return;
         }
     }
 

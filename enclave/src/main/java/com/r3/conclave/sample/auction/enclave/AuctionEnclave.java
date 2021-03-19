@@ -16,8 +16,10 @@ import java.util.Map;
 
 public class AuctionEnclave extends Enclave {
 
-    private Map<String, PublicKey> userKeysMap = new HashMap<>();
-    private Map<String, Integer> userBidsMap = new HashMap<>();
+    private Map<PublicKey, String> userRouteMap = new HashMap<>();
+    private Map<PublicKey, Integer> userBidsMap = new HashMap<>();
+    private Kryo kryo = new Kryo();
+
     private Pair<String, PublicKey> auctionAdmin = null;
 
     // Mails send from clients to the enclave are received here
@@ -26,8 +28,8 @@ public class AuctionEnclave extends Enclave {
         Message message = readMail(mail);
         PublicKey senderPK = mail.getAuthenticatedSender();
         if (message.getType().equals("BID")) {
-            userBidsMap.put(userRoute, message.getBid());
-            userKeysMap.put(userRoute, senderPK);
+            userBidsMap.put(senderPK, message.getBid());
+            userRouteMap.put(senderPK, userRoute);
         } else if (message.getType().equals("PROCESS-BID")) {
             auctionAdmin = new Pair<>(userRoute, senderPK);
             processBids();
@@ -36,14 +38,14 @@ public class AuctionEnclave extends Enclave {
 
     // Process user bids. The highest bidder wins.
     private void processBids() {
-        String winner = null;
+        PublicKey winner = null;
         int maxBid = 0;
-        for (String userRoute : userBidsMap.keySet()) {
-            Integer bid = userBidsMap.get(userRoute);
+        for (PublicKey publicKey : userBidsMap.keySet()) {
+            Integer bid = userBidsMap.get(publicKey);
 
             if (bid > maxBid) {
                 maxBid = bid;
-                winner = userRoute;
+                winner = publicKey;
             }
         }
 
@@ -51,13 +53,13 @@ public class AuctionEnclave extends Enclave {
     }
 
     // Send auction result back to the client
-    private void sendAuctionResult(String winner){
+    private void sendAuctionResult(PublicKey winner){
 
-        for(String userRoute: userKeysMap.keySet()){
-            if(userRoute.equals(winner)){
-                sendMail(userKeysMap.get(userRoute), userRoute, "Congratulations! Your made the winning bid");
+        for(PublicKey publicKey: userRouteMap.keySet()){
+            if(publicKey.equals(winner)){
+                sendMail(publicKey, userRouteMap.get(publicKey), "Congratulations! Your made the winning bid");
             }else{
-                sendMail(userKeysMap.get(userRoute), userRoute, "Better Luck Next Time!");
+                sendMail(publicKey, userRouteMap.get(publicKey), "Better Luck Next Time!");
             }
         }
 
@@ -73,7 +75,6 @@ public class AuctionEnclave extends Enclave {
 
 
     private Message readMail(EnclaveMail mail) {
-        Kryo kryo = new Kryo();
         kryo.register(Message.class, new MessageSerializer());
         Input input = new Input(new ByteArrayInputStream(mail.getBodyAsBytes()));
         return kryo.readObject(input, Message.class);

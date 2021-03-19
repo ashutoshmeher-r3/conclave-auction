@@ -2,6 +2,7 @@ package com.r3.conclave.sample.auction.client;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
+import com.r3.conclave.client.EnclaveConstraint;
 import com.r3.conclave.common.EnclaveInstanceInfo;
 import com.r3.conclave.mail.Curve25519PrivateKey;
 import com.r3.conclave.mail.EnclaveMail;
@@ -19,14 +20,25 @@ import java.util.UUID;
 
 public class AuctionClient {
 
+    // Kryo library used for serialization
+    private static Kryo kryo;
+
     public static void main(String[] args) throws Exception{
+        kryo = new Kryo();
         String messageType = args[0];
+
+        // Establish a TCP connection with the host
         Pair<DataInputStream, DataOutputStream> streams = establishConnection();
         DataInputStream fromHost = streams.getFirst();
         DataOutputStream toHost = streams.getSecond();
 
-        EnclaveInstanceInfo attestation = getAttestation(fromHost);
+        // Verify attestation before sending sensitive data to the enclave
+        EnclaveInstanceInfo attestation = verifyAttestatiom(fromHost);
+
+        // Get bid from the user
         int bid = getUserBidInput(args);
+
+        // Serialize, encrypt and send the bid data to the enclave for processing.
         Output serializedOutput = serializeMessage(messageType, bid);
         PrivateKey myKey = Curve25519PrivateKey.random();
         PostOffice postOffice = attestation.createPostOffice(myKey, UUID.randomUUID().toString());
@@ -36,7 +48,7 @@ public class AuctionClient {
         toHost.writeInt(encryptedMail.length);
         toHost.write(encryptedMail);
 
-        // Enclave will mail us back.
+        // Receive Enclave's reply
         byte[] encryptedReply = new byte[fromHost.readInt()];
         System.out.println("Reading reply mail of length " + encryptedReply.length + " bytes.");
         fromHost.readFully(encryptedReply);
@@ -50,7 +62,6 @@ public class AuctionClient {
     private static Output serializeMessage(String messageType, int bid){
         Message message = new Message(messageType, bid);
         Output output = new Output(new ByteArrayOutputStream());
-        Kryo kryo = new Kryo();
         kryo.register(Message.class, new MessageSerializer());
         kryo.writeObject(output, message);
         output.close();
@@ -66,7 +77,7 @@ public class AuctionClient {
             BufferedReader reader =
                     new BufferedReader(new InputStreamReader(System.in));
             String bidAmount = reader.readLine();
-            return Integer.valueOf(bidAmount);
+            return Integer.parseInt(bidAmount);
         }
         return 0;
     }
@@ -90,12 +101,15 @@ public class AuctionClient {
         return new Pair<>(fromHost, toHost);
     }
 
-    private static EnclaveInstanceInfo getAttestation(DataInputStream fromHost) throws Exception{
+    private static EnclaveInstanceInfo verifyAttestatiom(DataInputStream fromHost) throws Exception{
         byte[] attestationBytes = new byte[fromHost.readInt()];
         fromHost.readFully(attestationBytes);
         EnclaveInstanceInfo attestation = EnclaveInstanceInfo.deserialize(attestationBytes);
 
         System.out.println("Attestation Info received:  " + attestation);
+
+        EnclaveConstraint.parse("C:7AD879521568D9B98EB886BA0D4CE82D367051D96D9E1D752869078B3B4271DF SEC:INSECURE").check(attestation);
+
         return attestation;
     }
 }
