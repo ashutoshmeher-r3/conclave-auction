@@ -26,6 +26,7 @@ public class AuctionClient {
     public static void main(String[] args) throws Exception{
         kryo = new Kryo();
         String messageType = args[0];
+        String constraint = args[1];
 
         // Establish a TCP connection with the host
         Pair<DataInputStream, DataOutputStream> streams = establishConnection();
@@ -33,7 +34,7 @@ public class AuctionClient {
         DataOutputStream toHost = streams.getSecond();
 
         // Verify attestation before sending sensitive data to the enclave
-        EnclaveInstanceInfo attestation = verifyAttestatiom(fromHost);
+        EnclaveInstanceInfo attestation = verifyAttestatiom(fromHost, constraint);
 
         // Get bid from the user
         int bid = getUserBidInput(args);
@@ -101,14 +102,14 @@ public class AuctionClient {
         return new Pair<>(fromHost, toHost);
     }
 
-    private static EnclaveInstanceInfo verifyAttestatiom(DataInputStream fromHost) throws Exception{
+    private static EnclaveInstanceInfo verifyAttestatiom(DataInputStream fromHost, String constraint) throws Exception{
         byte[] attestationBytes = new byte[fromHost.readInt()];
         fromHost.readFully(attestationBytes);
         EnclaveInstanceInfo attestation = EnclaveInstanceInfo.deserialize(attestationBytes);
 
         System.out.println("Attestation Info received:  " + attestation);
 
-        EnclaveConstraint.parse("C:7AD879521568D9B98EB886BA0D4CE82D367051D96D9E1D752869078B3B4271DF SEC:INSECURE").check(attestation);
+        EnclaveConstraint.parse("C:"+ constraint +" SEC:INSECURE").check(attestation);
 
         return attestation;
     }

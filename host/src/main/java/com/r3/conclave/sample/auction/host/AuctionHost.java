@@ -36,6 +36,7 @@ public class AuctionHost {
             serverSocket = new ServerSocket(5051);
         }catch (IOException ioe){
             ioe.printStackTrace();
+            throw ioe;
         }
         System.out.println("Listening on port 5051");
         while (true) {

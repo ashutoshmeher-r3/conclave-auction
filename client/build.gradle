@@ -19,9 +19,15 @@ task runClientAsAdmin(type: JavaExec, dependsOn: assemble) {
     args 'PROCESS-BID'
 }
 
-task runClient(type: JavaExec, dependsOn: assemble) {
+task runClientAsBidder(type: JavaExec, dependsOn: assemble) {
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
     main = 'com.r3.conclave.sample.auction.client.AuctionClient'
     args 'BID'
+}
+
+task runClient(type: JavaExec, dependsOn: assemble) {
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+    main = 'com.r3.conclave.sample.auction.client.AuctionClient'
 }
